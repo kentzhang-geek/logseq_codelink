@@ -12,7 +12,7 @@ codelink://D:/Notes/pages/hello.md:12
 | --- | --- |
 | **Alt+C** | 将光标对应的文件实际行号链接复制到剪贴板；没有编辑光标时，复制当前文档的第 1 行链接。 |
 | **Alt+G** | 打开单行输入框；剪贴板是有效的 codelink 字符串时自动预填，按 **Enter** 跳转；按 **Esc** 取消。其他内容或读取失败时保持为空，可手动粘贴。 |
-| **Block 右键菜单 → 复制 CodeLink（块首行）** | 复制右键所选块在文档中的起始行链接；多行块使用第一行，不依赖编辑光标。 |
+| **Block 右键菜单 → Copy CodeLink (Block First Line)** | 复制右键所选块在文档中的起始行链接；多行块使用第一行，不依赖编辑光标。 |
 
 也可以从 Logseq 命令面板运行「CodeLink：复制当前位置链接」和「CodeLink：输入链接并跳转」。快捷键冲突时，可在 Logseq 的快捷键设置中搜索 CodeLink 并重新绑定。
 
@@ -20,7 +20,7 @@ codelink://D:/Notes/pages/hello.md:12
 
 ## 安装
 
-已构建的插件位于 `release/logseq-codelink/`，压缩包位于 `release/logseq-codelink-v0.1.2.zip`。无需安装 Node.js 或运行 npm。
+已构建的插件位于 `release/logseq-codelink/`，压缩包位于 `release/logseq-codelink-v0.1.3.zip`。无需安装 Node.js 或运行 npm。
 
 1. 如果使用压缩包，先解压，保留整个 `logseq-codelink` 文件夹。
 2. 在 Logseq 中启用「设置 → 高级 → 开发者模式」。
@@ -33,7 +33,7 @@ codelink://D:/Notes/pages/hello.md:12
 - 支持本地文件知识库中，已经被 Logseq 索引为页面的 `.md` / `.markdown` 文件。
 - 支持已索引的 UTF-8 文本 `.board`，以及 Logseq 原生白板 `.edn`。只有页面类型为 `whiteboard` 的 `.edn` 才会被接受，`logseq/config.edn` 不会被当作白板。
 - Markdown 跳转会展开父块，滚动并进入对应块，将光标放到目标行开头。页首、块外空行或无法准确映射的源码，会打开页面并显示高亮源码行。
-- 右键块左侧圆点，选择「复制 CodeLink（块首行）」。链接使用该块所属页面的文件路径，因此侧栏和引用中显示的块也按其原文档定位。白板画布块暂不支持源码首行映射，仍可用 Alt+C 生成白板文档链接。
+- 右键块左侧圆点，选择「Copy CodeLink (Block First Line)」。链接使用该块所属页面的文件路径，因此侧栏和引用中显示的块也按其原文档定位。白板画布块暂不支持源码首行映射，仍可用 Alt+C 生成白板文档链接。
 - 白板使用画布，Logseq 没有白板文件行号编辑接口。因此白板链接会打开对应画布，并显示高亮的源码行；Alt+C 在白板画布上生成第 1 行链接。
 - 非当前知识库、未索引文件、附件、其他扩展名、二进制或无效 UTF-8 文本、无效链接和越界行号都会报错。跨知识库链接需要先手动切换到目标知识库。
 - 新建但尚未写入文件的页面需要先保存。Logseq 延迟写盘期间会短暂重试；仍未同步时提示稍后重试。生成链接不会退出编辑或修改笔记。

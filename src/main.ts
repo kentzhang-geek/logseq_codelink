@@ -186,7 +186,7 @@ logseq.ready(() => {
     key: 'goto-codelink', label: 'CodeLink：输入链接并跳转',
     keybinding: { binding: 'alt+g', mode: 'global' },
   }, openJump);
-  logseq.Editor.registerBlockContextMenuItem('复制 CodeLink（块首行）', async ({ uuid }) => {
+  logseq.Editor.registerBlockContextMenuItem('Copy CodeLink (Block First Line)', async ({ uuid }) => {
     await copyLink(() => service.copyBlockStart(uuid));
   });
 }).catch(console.error);

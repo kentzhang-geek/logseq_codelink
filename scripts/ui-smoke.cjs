@@ -55,7 +55,7 @@ async (page) => {
   await page.waitForFunction(() => window.__codelinkTest?.commands['goto-codelink']);
   await page.evaluate(async () => {
     const state = window.__codelinkTest;
-    if (state.contextMenuLabel !== '复制 CodeLink（块首行）') throw new Error('Missing block context menu');
+    if (state.contextMenuLabel !== 'Copy CodeLink (Block First Line)') throw new Error('Missing block context menu');
     await state.commands['block-context-copy']({ uuid: 'child' });
     if (state.copied !== 'codelink://D:/Notes/pages/test.md:2') throw new Error('Wrong block first-line link');
   });
