@@ -94,6 +94,23 @@ export class CodeLinkService {
     return link;
   }
 
+  async copyBlockStart(uuid: string): Promise<string> {
+    const block = await this.sdk.Editor.getBlock(uuid);
+    if (!block) throw new Error('所选块已不存在，请刷新页面后重试。');
+    const graph = await this.graph();
+    // Resolve the clicked block's own page, including blocks shown in the sidebar or references.
+    const document = await this.currentDocument(graph, block);
+    if (document.kind !== 'markdown') {
+      throw new Error('白板画布块无法可靠映射到源码起始行，请使用 Alt+C 复制白板文档链接。');
+    }
+    const { locations } = await this.mapped(document);
+    const location = locations.find(item => item.block.uuid === uuid);
+    if (!location) throw new Error('找不到所选块对应的文件行，请等待页面保存后重试。');
+    const link = createCodeLink(document.path, location.start);
+    await this.desktop.copyText(link);
+    return link;
+  }
+
   async jump(input: string): Promise<{ path: string; line: number; previewed: boolean }> {
     const link = parseCodeLink(input);
     const graph = await this.graph();

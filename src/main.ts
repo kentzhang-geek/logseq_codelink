@@ -75,15 +75,19 @@ function showSource(source: SourcePreview) {
 const desktop = desktopBridge(window.parent);
 const service = new CodeLinkService(logseq, desktop, showSource);
 
-async function copyCurrent() {
+async function copyLink(generate: () => Promise<string>) {
   if (copyBusy || logseq.isMainUIVisible) return;
   copyBusy = true;
   try {
-    await service.copyCurrent();
+    await generate();
     await logseq.UI.showMsg('CodeLink 已复制到剪贴板。', 'success');
   } catch (error) {
     await logseq.UI.showMsg(error instanceof Error ? error.message : '生成 CodeLink 失败。', 'error');
   } finally { copyBusy = false; }
+}
+
+async function copyCurrent() {
+  await copyLink(() => service.copyCurrent());
 }
 
 function openJump() {
@@ -182,4 +186,7 @@ logseq.ready(() => {
     key: 'goto-codelink', label: 'CodeLink：输入链接并跳转',
     keybinding: { binding: 'alt+g', mode: 'global' },
   }, openJump);
+  logseq.Editor.registerBlockContextMenuItem('复制 CodeLink（块首行）', async ({ uuid }) => {
+    await copyLink(() => service.copyBlockStart(uuid));
+  });
 }).catch(console.error);

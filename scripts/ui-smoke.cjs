@@ -33,6 +33,8 @@ async (page) => {
         pushState: async () => {},
       },
       Editor: {
+        registerBlockContextMenuItem: (label, callback) => { commands['block-context-copy'] = callback; state.contextMenuLabel = label; },
+        getBlock: async uuid => ({ uuid, content: 'child\nsecond line', page: { id: 1 } }),
         checkEditing: async () => false,
         getCurrentPage: async () => pageEntity,
         getPage: async () => pageEntity,
@@ -51,6 +53,12 @@ async (page) => {
   });
   await page.goto('http://127.0.0.1:4174/');
   await page.waitForFunction(() => window.__codelinkTest?.commands['goto-codelink']);
+  await page.evaluate(async () => {
+    const state = window.__codelinkTest;
+    if (state.contextMenuLabel !== '复制 CodeLink（块首行）') throw new Error('Missing block context menu');
+    await state.commands['block-context-copy']({ uuid: 'child' });
+    if (state.copied !== 'codelink://D:/Notes/pages/test.md:2') throw new Error('Wrong block first-line link');
+  });
   await page.keyboard.press('Alt+c');
   await page.waitForFunction(() => window.__codelinkTest.copied === 'codelink://D:/Notes/pages/test.md:1');
   await page.keyboard.press('Alt+g');

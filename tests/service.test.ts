@@ -114,3 +114,38 @@ test('missing local graph gives a clear error', async () => {
   state.graph = null;
   await assert.rejects(service.copyCurrent(), /本地文件知识库/);
 });
+
+test('block context copy uses the clicked block first line rather than editing cursor', async () => {
+  const { service, state, sdk } = fixture();
+  sdk.Editor.getBlock = async uuid => {
+    assert.equal(uuid, 'child');
+    return state.child as never;
+  };
+  sdk.Editor.checkEditing = async () => { throw new Error('Must not read editing state'); };
+  const link = await service.copyBlockStart('child');
+  assert.equal(link, 'codelink://D:/Notes/pages/%E6%B5%8B%E8%AF%95.md:2');
+  assert.equal(state.copied, link);
+  assert.equal(state.edits.length, 0);
+});
+
+test('block context copy works with no cursor and resolves the block owning page', async () => {
+  const { service, state, sdk } = fixture();
+  state.editing = false;
+  state.cursor = null;
+  state.file = 'pages/侧栏页面.md';
+  sdk.Editor.getCurrentPage = async () => { throw new Error('Must not use active page'); };
+  sdk.Editor.getPage = async id => {
+    assert.equal(id, state.child.page.id);
+    return state.page as never;
+  };
+  assert.equal(await service.copyBlockStart('child'), 'codelink://D:/Notes/pages/%E4%BE%A7%E6%A0%8F%E9%A1%B5%E9%9D%A2.md:2');
+});
+
+test('deleted block context target reports error without replacing the clipboard', async () => {
+  const { service, state, sdk } = fixture();
+  state.copied = 'previous clipboard';
+  sdk.Editor.getBlock = async () => null;
+  await assert.rejects(service.copyBlockStart('missing'), /不存在/);
+  assert.equal(state.copied, 'previous clipboard');
+  assert.deepEqual(state.reads, []);
+});
