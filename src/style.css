@@ -1,0 +1,29 @@
+:root { font: 15px/1.5 system-ui, sans-serif; color-scheme: light dark; color: #263b40; }
+* { box-sizing: border-box; }
+body { margin: 0; background: transparent; }
+.overlay { position: fixed; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 12vh 20px 24px; background: #10272d55; }
+.panel { width: min(660px, 100%); max-height: 80vh; overflow: auto; padding: 28px; border: 1px solid #bfcfd0; border-radius: 14px; background: #fcfdfc; box-shadow: 0 20px 75px #0003; }
+h1 { margin: 0 0 8px; font-size: 22px; font-weight: 650; }
+p { margin: 0 0 20px; color: #5c6d70; }
+label { display: block; font-weight: 600; margin-bottom: 8px; }
+input { width: 100%; padding: 12px; border: 1px solid #9aacaf; border-radius: 7px; background: #fff; color: #263b40; font: 14px/1.6 ui-monospace, monospace; }
+:focus-visible { outline: 3px solid #258795; outline-offset: 3px; }
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+button { border: 1px solid transparent; border-radius: 7px; padding: 9px 18px; background: #17656d; color: #fff; font: inherit; cursor: pointer; }
+button.secondary { background: transparent; border-color: #aebdc0; color: inherit; }
+button:disabled { opacity: .6; cursor: wait; }
+.error { min-height: 22px; margin: 8px 0 0; color: #b12b28; font-size: 14px; }
+.path { font-size: 12px; overflow-wrap: anywhere; }
+.source { max-height: 45vh; overflow: auto; padding: 12px 0; border: 1px solid #cad6d7; border-radius: 7px; background: #f0f5f4; font: 13px/1.8 ui-monospace, monospace; }
+.source-line { display: flex; min-width: max-content; padding-right: 16px; }
+.line-number { position: sticky; left: 0; flex: 0 0 64px; padding-right: 16px; text-align: right; color: #6e8184; background: #f0f5f4; user-select: none; }
+.target, .target .line-number { background: #fbe6a5; color: #392d0c; }
+@media (prefers-color-scheme: dark) {
+  :root { color: #e0e9e9; }
+  .panel { background: #1e2d30; border-color: #4c6468; }
+  p { color: #b0c3c5; }
+  input { background: #152326; color: #e0e9e9; border-color: #6b8488; }
+  .error { color: #ffb0a6; }
+  .source, .line-number { background: #152326; color: #b0c3c5; }
+  .target, .target .line-number { background: #5c4b20; color: #fff0bc; }
+}

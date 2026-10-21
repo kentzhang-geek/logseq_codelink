@@ -1,0 +1,30 @@
+{
+  "name": "logseq-codelink",
+  "version": "0.1.0",
+  "description": "Copy and open file-and-line codelinks in Logseq.",
+  "main": "dist/index.html",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite build --watch",
+    "test": "tsx --test tests/*.test.ts",
+    "check": "npm run test && npm run build",
+    "package": "npm run check && node scripts/package.mjs"
+  },
+  "logseq": {
+    "id": "logseq-codelink",
+    "title": "CodeLink",
+    "icon": "icon.svg"
+  },
+  "dependencies": {
+    "@logseq/libs": "0.0.17"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "fflate": "^0.8.3",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.4.0"
+  },
+  "license": "MIT"
+}
