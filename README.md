@@ -11,7 +11,7 @@ codelink://D:/Notes/pages/hello.md:12
 | 快捷键 | 功能 |
 | --- | --- |
 | **Alt+C** | 将光标对应的文件实际行号链接复制到剪贴板；没有编辑光标时，复制当前文档的第 1 行链接。 |
-| **Alt+G** | 打开单行输入框，粘贴 codelink，按 **Enter** 跳转；按 **Esc** 取消。 |
+| **Alt+G** | 打开单行输入框；剪贴板是有效的 codelink 字符串时自动预填，按 **Enter** 跳转；按 **Esc** 取消。其他内容或读取失败时保持为空，可手动粘贴。 |
 
 也可以从 Logseq 命令面板运行「CodeLink：复制当前位置链接」和「CodeLink：输入链接并跳转」。快捷键冲突时，可在 Logseq 的快捷键设置中搜索 CodeLink 并重新绑定。
 
@@ -19,7 +19,7 @@ codelink://D:/Notes/pages/hello.md:12
 
 ## 安装
 
-已构建的插件位于 `release/logseq-codelink/`，压缩包位于 `release/logseq-codelink-v0.1.0.zip`。无需安装 Node.js 或运行 npm。
+已构建的插件位于 `release/logseq-codelink/`，压缩包位于 `release/logseq-codelink-v0.1.1.zip`。无需安装 Node.js 或运行 npm。
 
 1. 如果使用压缩包，先解压，保留整个 `logseq-codelink` 文件夹。
 2. 在 Logseq 中启用「设置 → 高级 → 开发者模式」。

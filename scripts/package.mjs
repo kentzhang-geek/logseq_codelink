@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { zipSync } from 'fflate';
@@ -8,6 +8,12 @@ const metadata = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf
 const release = path.join(root, 'release');
 const output = path.join(release, 'logseq-codelink');
 await mkdir(output, { recursive: true });
+// Only remove this generated distribution directory, after verifying its resolved location.
+const generatedDist = path.resolve(output, 'dist');
+if (path.relative(root, generatedDist) !== path.join('release', 'logseq-codelink', 'dist')) {
+  throw new Error('Unexpected distribution directory.');
+}
+await rm(generatedDist, { recursive: true, force: true });
 for (const file of ['dist', 'icon.svg', 'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
   await cp(path.join(root, file), path.join(output, file), { recursive: true, force: true });
 }

@@ -5,13 +5,22 @@ async (page) => {
     window.__LSP__HOST__ = true;
     const commands = {};
     const state = {
-      commands, copied: '', visible: false, edits: [], messages: [],
+      commands, copied: '', visible: false, edits: [], messages: [], clipboard: null, clipboardDelay: 0, clipboardError: false,
       text: '- parent\n\t- child\n\t  second line\n',
     };
     window.__codelinkTest = state;
     const pageEntity = { id: 1, uuid: 'p', name: 'test', file: { id: 2 } };
     window.apis = { doAction: async () => state.text };
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { state.copied = text; } } });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: {
+      writeText: async text => { state.copied = text; state.clipboard = text; },
+      readText: async () => {
+        const value = state.clipboard;
+        const failure = state.clipboardError;
+        if (state.clipboardDelay) await new Promise(resolve => setTimeout(resolve, state.clipboardDelay));
+        if (failure) throw new Error('Clipboard read denied');
+        return value;
+      },
+    } });
     window.logseq = {
       ready: async callback => callback(),
       setMainUIInlineStyle: () => {},
@@ -45,6 +54,37 @@ async (page) => {
   await page.keyboard.press('Alt+c');
   await page.waitForFunction(() => window.__codelinkTest.copied === 'codelink://D:/Notes/pages/test.md:1');
   await page.keyboard.press('Alt+g');
+  await page.waitForFunction(() => document.querySelector('#codelink-input')?.value === 'codelink://D:/Notes/pages/test.md:1');
+  await page.keyboard.press('Escape');
+  for (const value of [null, 123, { type: 'image' }, '', 'ordinary text', 'codelink://invalid', 'codelink://D:/a.md:0']) {
+    await page.evaluate(value => { window.__codelinkTest.clipboard = value; }, value);
+    await page.keyboard.press('Alt+g');
+    const input = page.getByRole('textbox', { name: 'CodeLink' });
+    await input.waitFor();
+    if (await input.inputValue() !== '') throw new Error('Invalid clipboard content was prefilled');
+    await page.keyboard.press('Escape');
+  }
+  await page.evaluate(() => { window.__codelinkTest.clipboardError = true; });
+  await page.keyboard.press('Alt+g');
+  await page.getByRole('textbox', { name: 'CodeLink' }).fill('manual input');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => {
+    const state = window.__codelinkTest;
+    state.clipboardError = false;
+    state.clipboard = 'codelink://D:/Notes/pages/test.md:3';
+    state.clipboardDelay = 500;
+  });
+  await page.keyboard.press('Alt+g');
+  await page.getByRole('textbox', { name: 'CodeLink' }).fill('user typed this');
+  await page.waitForTimeout(600);
+  if (await page.getByRole('textbox', { name: 'CodeLink' }).inputValue() !== 'user typed this') throw new Error('Delayed clipboard overwrote typing');
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Alt+g');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { window.__codelinkTest.clipboard = 'not a codelink'; window.__codelinkTest.clipboardDelay = 0; });
+  await page.keyboard.press('Alt+g');
+  await page.waitForTimeout(600);
+  if (await page.getByRole('textbox', { name: 'CodeLink' }).inputValue() !== '') throw new Error('Old clipboard read affected a new dialog');
   await page.getByRole('textbox', { name: 'CodeLink' }).fill('codelink://D:/Other/pages/test.md:1');
   await page.keyboard.press('Enter');
   await page.getByRole('alert').filter({ hasText: '不属于' }).waitFor();
@@ -67,5 +107,5 @@ async (page) => {
   if (!target?.includes('child')) throw new Error('Missing target line highlight');
   await page.getByRole('button', { name: '返回文档' }).click();
   await page.waitForFunction(() => !window.__codelinkTest.visible);
-  console.log('PASS: copy, input autofocus, Enter, validation error, Markdown cursor, Esc, board source highlight');
+  console.log('PASS: clipboard prefill, invalid/non-string clipboard, denied permission, delayed reads, copy, Enter, validation, Markdown cursor, Esc, board source highlight');
 }

@@ -5,8 +5,11 @@ type HostWindow = Pick<Window, 'document' | 'navigator'> & {
 };
 
 /** Logseq desktop's readFile IPC bridge; the official SDK has no graph-file reader. */
-export function desktopBridge(host: HostWindow): DesktopBridge {
+export function desktopBridge(host: HostWindow): DesktopBridge & { readClipboard(): Promise<unknown> } {
   return {
+    async readClipboard() {
+      return host.navigator.clipboard.readText();
+    },
     async readText(path) {
       if (!host.apis?.doAction) throw new Error('此插件需要 Logseq 桌面文件版。');
       return host.apis.doAction(['readFile', path]);

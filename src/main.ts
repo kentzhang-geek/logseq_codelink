@@ -2,6 +2,7 @@ import '@logseq/libs';
 import { desktopBridge } from './desktop';
 import { CodeLinkService, type SourcePreview } from './service';
 import { splitLines } from './lines';
+import { parseCodeLink } from './codelink';
 import './style.css';
 
 const app = document.querySelector<HTMLElement>('#app')!;
@@ -71,7 +72,8 @@ function showSource(source: SourcePreview) {
   });
 }
 
-const service = new CodeLinkService(logseq, desktopBridge(window.parent), showSource);
+const desktop = desktopBridge(window.parent);
+const service = new CodeLinkService(logseq, desktop, showSource);
 
 async function copyCurrent() {
   if (copyBusy || logseq.isMainUIVisible) return;
@@ -99,6 +101,8 @@ function openJump() {
   input.placeholder = 'codelink://D:/Notes/pages/我的笔记.md:12';
   input.autocomplete = 'off';
   input.spellcheck = false;
+  let edited = false;
+  input.addEventListener('input', () => { edited = true; });
   const error = document.createElement('p');
   error.id = 'codelink-error';
   error.className = 'error';
@@ -141,6 +145,19 @@ function openJump() {
   panel.append(form);
   logseq.showMainUI({ autoFocus: true });
   requestAnimationFrame(() => input.focus());
+  void (async () => {
+    try {
+      const text = await desktop.readClipboard();
+      if (typeof text !== 'string') return;
+      parseCodeLink(text);
+      // A delayed clipboard read must not replace typing or a newer dialog.
+      if (generation !== dialogGeneration || edited || busy || previewed || !input.isConnected) return;
+      input.value = text.trim();
+      if (document.activeElement === input) input.select();
+    } catch {
+      // Empty/invalid clipboard contents and denied permissions leave manual input available.
+    }
+  })();
 }
 
 document.addEventListener('keydown', event => {

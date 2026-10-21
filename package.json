@@ -1,6 +1,6 @@
 {
   "name": "logseq-codelink",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Copy and open file-and-line codelinks in Logseq.",
   "main": "dist/index.html",
   "type": "module",
