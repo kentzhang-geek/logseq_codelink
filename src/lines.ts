@@ -40,12 +40,12 @@ export function mapBlocks(text: string, tree: OutlineBlock[]): BlockLocation[] {
         if (contentLines.every((line, offset) => offset === 0 ||
           lines[i + offset]?.trim() === line.trim())) { found = i; break; }
       }
-      if (found < 0) throw new Error('页面内容正在保存，或源码与块结构不匹配，请稍后重试。');
+      if (found < 0) throw new Error('The page is being saved, or its source does not match the block structure. Try again shortly.');
       result.push({ block, start: found + 1, contentLines, ancestors });
       next = found + contentLines.length;
       const children = (block.children ?? []).filter((child): child is OutlineBlock => !Array.isArray(child));
       if (children.length !== (block.children?.length ?? 0)) {
-        throw new Error('Logseq 未返回完整块树，无法可靠定位行号。');
+        throw new Error('Logseq returned an incomplete block tree. Cannot reliably locate the line.');
       }
       visit(children, [...ancestors, block.uuid]);
     }

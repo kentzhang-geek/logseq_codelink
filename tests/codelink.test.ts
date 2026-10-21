@@ -7,9 +7,9 @@ test('reference-compatible Windows file and line', () => {
   assert.deepEqual(parseCodeLink('codelink://D:/Notes/pages/hello.md:12'), { path: 'D:/Notes/pages/hello.md', line: 12 });
 });
 test('Unicode, whitespace and literal URI delimiters round trip', () => {
-  const path = 'D:/知识库/pages/笔记 #1 100% ? %20.md';
+  const path = 'D:/\u77e5\u8bc6\u5e93/pages/\u7b14\u8bb0 #1 100% ? %20.md';
   assert.deepEqual(parseCodeLink(createCodeLink(path, 8)), { path, line: 8 });
-  assert.deepEqual(parseCodeLink('codelink://D:/笔记/test.md:9'), { path: 'D:/笔记/test.md', line: 9 });
+  assert.deepEqual(parseCodeLink('codelink://D:/\u7b14\u8bb0/test.md:9'), { path: 'D:/\u7b14\u8bb0/test.md', line: 9 });
 });
 test('normalized missing drive colon, backslash path and trailing URL slash', () => {
   assert.equal(parseCodeLink('codelink://D/Notes/a.md:2/').path, 'D:/Notes/a.md');
@@ -51,7 +51,7 @@ test('only Markdown and registered board documents', () => {
   for (const file of ['a.ts', 'a.png', 'a.org', 'config.edn', 'a.pdf']) assert.throws(() => documentKind(file));
 });
 test('binary and invalid UTF-8 content is rejected', () => {
-  assertText('中文\r\n文本\t内容');
+  assertText('\u4e2d\u6587\r\n\u6587\u672c\t\u5185\u5bb9');
   assertText('');
   for (const data of [null, new Uint8Array([1]), '\0data', '\ufffd', '\u0001']) assert.throws(() => assertText(data));
 });

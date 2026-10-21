@@ -39,7 +39,7 @@ function shell(title: string, description: string): HTMLElement {
 
 function showSource(source: SourcePreview) {
   previewed = true;
-  const panel = shell(`源码 · 第 ${source.line} 行`, source.reason);
+  const panel = shell(`Source - Line ${source.line}`, source.reason);
   const path = document.createElement('p');
   path.className = 'path';
   path.textContent = source.path;
@@ -62,7 +62,7 @@ function showSource(source: SourcePreview) {
     pre.append(line);
   }
   const button = document.createElement('button');
-  button.textContent = '返回文档';
+  button.textContent = 'Back to Document';
   button.addEventListener('click', () => close(false));
   panel.append(path, pre, button);
   logseq.showMainUI({ autoFocus: true });
@@ -80,9 +80,9 @@ async function copyLink(generate: () => Promise<string>) {
   copyBusy = true;
   try {
     await generate();
-    await logseq.UI.showMsg('CodeLink 已复制到剪贴板。', 'success');
+    await logseq.UI.showMsg('CodeLink copied to the clipboard.', 'success');
   } catch (error) {
-    await logseq.UI.showMsg(error instanceof Error ? error.message : '生成 CodeLink 失败。', 'error');
+    await logseq.UI.showMsg(error instanceof Error ? error.message : 'Failed to generate CodeLink.', 'error');
   } finally { copyBusy = false; }
 }
 
@@ -94,7 +94,7 @@ function openJump() {
   if (busy) return;
   const generation = ++dialogGeneration;
   previewed = false;
-  const panel = shell('跳转 CodeLink', '粘贴一行 codelink，按 Enter 跳转；Esc 取消。');
+  const panel = shell('Open CodeLink', 'Paste a single-line codelink. Press Enter to open it, or Esc to cancel.');
   const form = document.createElement('form');
   const label = document.createElement('label');
   label.htmlFor = 'codelink-input';
@@ -102,7 +102,7 @@ function openJump() {
   const input = document.createElement('input');
   input.id = 'codelink-input';
   input.type = 'text';
-  input.placeholder = 'codelink://D:/Notes/pages/我的笔记.md:12';
+  input.placeholder = 'codelink://D:/Notes/pages/my-note.md:12';
   input.autocomplete = 'off';
   input.spellcheck = false;
   let edited = false;
@@ -117,32 +117,32 @@ function openJump() {
   const cancel = document.createElement('button');
   cancel.type = 'button';
   cancel.className = 'secondary';
-  cancel.textContent = '取消';
+  cancel.textContent = 'Cancel';
   cancel.addEventListener('click', () => { if (!busy) close(); });
   const submit = document.createElement('button');
   submit.type = 'submit';
-  submit.textContent = '跳转 ↵';
+  submit.textContent = 'Open';
   actions.append(cancel, submit);
   form.append(label, input, error, actions);
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (busy) return;
-    if (!input.value.trim()) { error.textContent = '请输入 codelink。'; input.focus(); return; }
+    if (!input.value.trim()) { error.textContent = 'Enter a codelink.'; input.focus(); return; }
     busy = true;
     submit.disabled = true;
     input.disabled = true;
-    submit.textContent = '正在定位…';
+    submit.textContent = 'Locating...';
     error.textContent = '';
     try {
       await service.jump(input.value);
       if (!previewed) close(false);
     } catch (reason) {
-      error.textContent = reason instanceof Error ? reason.message : '跳转失败，请重试。';
+      error.textContent = reason instanceof Error ? reason.message : 'Failed to open the link. Try again.';
     } finally {
       busy = false;
       submit.disabled = false;
       input.disabled = false;
-      submit.textContent = '跳转 ↵';
+      submit.textContent = 'Open';
       if (generation === dialogGeneration && !previewed) input.focus();
     }
   });
@@ -179,11 +179,11 @@ document.addEventListener('keydown', event => {
 logseq.ready(() => {
   logseq.setMainUIInlineStyle({ zIndex: 1000 });
   logseq.App.registerCommandPalette({
-    key: 'copy-codelink', label: 'CodeLink：复制当前位置链接',
+    key: 'copy-codelink', label: 'CodeLink: Copy Current Location',
     keybinding: { binding: 'alt+c', mode: 'global' },
   }, copyCurrent);
   logseq.App.registerCommandPalette({
-    key: 'goto-codelink', label: 'CodeLink：输入链接并跳转',
+    key: 'goto-codelink', label: 'CodeLink: Open Link',
     keybinding: { binding: 'alt+g', mode: 'global' },
   }, openJump);
   logseq.Editor.registerBlockContextMenuItem('Copy CodeLink (Block First Line)', async ({ uuid }) => {

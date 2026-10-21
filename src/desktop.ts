@@ -11,7 +11,7 @@ export function desktopBridge(host: HostWindow): DesktopBridge & { readClipboard
       return host.navigator.clipboard.readText();
     },
     async readText(path) {
-      if (!host.apis?.doAction) throw new Error('此插件需要 Logseq 桌面文件版。');
+      if (!host.apis?.doAction) throw new Error('This plugin requires the file-based Logseq desktop app.');
       return host.apis.doAction(['readFile', path]);
     },
     async copyText(text) {
@@ -27,7 +27,7 @@ export function desktopBridge(host: HostWindow): DesktopBridge & { readClipboard
         host.document.body.append(textarea);
         textarea.select();
         try {
-          if (!host.document.execCommand('copy')) throw new Error('无法写入剪贴板，请检查 Logseq 的剪贴板权限。');
+          if (!host.document.execCommand('copy')) throw new Error('Cannot write to the clipboard. Check clipboard permissions for Logseq.');
         } finally { textarea.remove(); active?.focus(); }
       }
     },

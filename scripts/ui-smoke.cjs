@@ -95,7 +95,7 @@ async (page) => {
   if (await page.getByRole('textbox', { name: 'CodeLink' }).inputValue() !== '') throw new Error('Old clipboard read affected a new dialog');
   await page.getByRole('textbox', { name: 'CodeLink' }).fill('codelink://D:/Other/pages/test.md:1');
   await page.keyboard.press('Enter');
-  await page.getByRole('alert').filter({ hasText: '不属于' }).waitFor();
+  await page.getByRole('alert').filter({ hasText: 'does not belong' }).waitFor();
   await page.screenshot({ path: 'output/playwright/invalid-graph.png' });
   await page.getByRole('textbox', { name: 'CodeLink' }).fill('codelink://D:/Notes/pages/test.md:3');
   await page.keyboard.press('Enter');
@@ -109,11 +109,11 @@ async (page) => {
   await page.keyboard.press('Alt+g');
   await page.getByRole('textbox', { name: 'CodeLink' }).fill('codelink://D:/Notes/whiteboards/test.edn:2');
   await page.keyboard.press('Enter');
-  await page.getByRole('heading', { name: '源码 · 第 2 行' }).waitFor();
+  await page.getByRole('heading', { name: 'Source - Line 2' }).waitFor();
   await page.screenshot({ path: 'output/playwright/board-source.png' });
   const target = await page.locator('.source .target').textContent();
   if (!target?.includes('child')) throw new Error('Missing target line highlight');
-  await page.getByRole('button', { name: '返回文档' }).click();
+  await page.getByRole('button', { name: 'Back to Document' }).click();
   await page.waitForFunction(() => !window.__codelinkTest.visible);
   console.log('PASS: clipboard prefill, invalid/non-string clipboard, denied permission, delayed reads, copy, Enter, validation, Markdown cursor, Esc, board source highlight');
 }
